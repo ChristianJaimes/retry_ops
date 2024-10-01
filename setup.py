@@ -7,8 +7,8 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     author='Tu Nombre',
-    author_email='christiandja@gmail.com',
-    url='https://github.com/ChristianJaimes/retryer',
+    author_email='tu_email@example.com',
+    url='https://github.com/tu_usuario/retryer',
     license='MIT',
     packages=find_packages(),
     classifiers=[
@@ -17,4 +17,7 @@ setup(
         'Operating System :: OS Independent',
     ],
     python_requires='>=3.6',
+    install_requires=[],
+    tests_require=['pytest'],
+    setup_requires=['pytest-runner'],
 )
