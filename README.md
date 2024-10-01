@@ -15,7 +15,7 @@ pip install retryer
 To use Retryer, you simply need to import it and apply the retry decorator to the function you want to wrap. Here is an example:
 
 ```python
-from retryer import retry
+from retryer import retry, silent_retry_with_default
 
 # Simple usage with default settings
 @retry
@@ -23,14 +23,37 @@ def my_function():
     # Function logic that may fail
     print("Attempting the operation...")
     raise ValueError("An error occurred!")
-```
 
+# Customizing the retry logic
+@retry(retries=5, retry_delay=2, exceptions=(IOError, ), error_message="Custom error message")
+def my_other_function():
+    # Function logic that may fail
+    print("Attempting another operation...")
+    raise IOError("Another error occurred!")
+
+# Using the silent retry decorator
+@silent_retry_with_default(default_return_value=-1, retries=5, retry_delay=3, exceptions=(RuntimeError,), error_message="Operation failed after retries")
+def my_silent_function():
+    # Function logic that may fail
+    print("Attempting the silent operation...")
+    raise RuntimeError("A runtime error occurred!")
+```
 ## Parameters
 
 The `@retry` decorator accepts the following parameters:
 
-- **attempts** (int): The number of retry attempts. Default is `3`.
-- **delay** (int or float): The delay (in seconds) between retry attempts. Default is `1`.
+- **retries** (int): The maximum number of retry attempts. Default is `3`.
+- **retry_delay** (int or float): The delay (in seconds) between retry attempts. Default is `2`.
+- **exceptions** (tuple): A tuple of exception classes that will trigger a retry. Default is `(Exception,)`.
+- **error_message** (str): The error message to be raised when the retry attempts are exceeded. Default is `"Max retries exceeded"`.
+
+The `@silent_retry_with_default` decorator accepts the following parameters:
+
+- **default_return_value** (any): The value to return if the retries are exceeded. Default is `None`.
+- **retries** (int): The maximum number of retry attempts. Default is `3`.
+- **retry_delay** (int or float): The delay (in seconds) between retry attempts. Default is `2`.
+- **exceptions** (tuple): A tuple of exception classes that will trigger a retry. Default is `(Exception,)`.
+- **error_message** (str): The error message to be logged when the retry attempts are exceeded. Default is `"Max retries exceeded"`.
 
 ## Contributing
 
