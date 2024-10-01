@@ -90,6 +90,3 @@ def test_silent_retry_with_default_fallback():
     result = my_function()
     assert result == "Fallback"
     assert counter['attempt'] == 3  # Debería haberse reintentado el número máximo de veces
-
-
-def test_silent
