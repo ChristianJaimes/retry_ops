@@ -12,18 +12,14 @@ jobs:
   test:
     runs-on: ubuntu-latest  # Elige el entorno donde correrán las pruebas
 
-    strategy:
-      matrix:
-        python-version: [3.7, 3.8, 3.9, 3.10]  # Diferentes versiones de Python para probar
-
     steps:
     - name: 📥 Check out the code
       uses: actions/checkout@v3  # Descarga el código de tu repo
 
-    - name: 🐍 Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4  # Configura la versión de Python
+    - name: 🐍 Set up Python 3.x
+      uses: actions/setup-python@v4  # Configura la versión de Python más reciente
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: '3.x'  # Esto asegura que siempre use la última versión de Python 3
 
     - name: 📦 Install dependencies
       run: |
