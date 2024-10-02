@@ -4,19 +4,19 @@ from functools import wraps
 
 def retry(retries=3, retry_delay=2, exceptions=(Exception,), error_message="Max retries exceeded"):
     """
-    Un decorador que reintenta una función si se levantan excepciones específicas durante su ejecución.
+    A decorator that retries a function if specific exceptions are raised during its execution.
 
     Args:
-        retries (int): Número máximo de intentos. Por defecto es 3.
-        retry_delay (int): Tiempo en segundos entre intentos. Por defecto es 2.
-        exceptions (tuple): Excepciones que desencadenan un reintento. Por defecto es (Exception,).
-        error_message (str): Mensaje de error si se exceden los reintentos.
+        retries (int): Maximum number of attempts. Default is 3.
+        retry_delay (int): Time in seconds between attempts. Default is 2.
+        exceptions (tuple): Exceptions that trigger a retry. Default is (Exception,).
+        error_message (str): Error message if the maximum retries are exceeded.
 
     Raises:
-        Exception: Si se excede el número de reintentos.
+        Exception: If the number of retries is exceeded.
 
     Returns:
-        any: El resultado de la función decorada.
+        any: The result of the decorated function.
     """
     def decorator(func):
         @wraps(func)
@@ -25,8 +25,8 @@ def retry(retries=3, retry_delay=2, exceptions=(Exception,), error_message="Max 
                 try:
                     return func(*args, **kwargs)
                 except exceptions as e:
-                    print(f"Error: {e}. Intento {attempt + 1} de {retries}")
-                    print(f"Reintentando en {retry_delay} segundos...")
+                    print(f"Error: {e}. Attempt {attempt + 1} of {retries}")
+                    print(f"Retrying in {retry_delay} seconds...")
                     sleep(retry_delay)
             raise Exception(error_message)
         return wrapper
@@ -36,17 +36,17 @@ def retry(retries=3, retry_delay=2, exceptions=(Exception,), error_message="Max 
 def silent_retry_with_default(retries=3, retry_delay=2, default_return_value=None,
                               exceptions=(Exception,), error_message="Max retries exceeded"):
     """
-    Un decorador que reintenta silenciosamente una función y devuelve un valor por defecto si falla.
+    A decorator that silently retries a function and returns a default value if it fails.
 
     Args:
-        retries (int): Número máximo de intentos. Por defecto es 3.
-        retry_delay (int): Tiempo en segundos entre intentos. Por defecto es 2.
-        default_return_value (any): Valor a devolver si se exceden los reintentos.
-        exceptions (tuple): Excepciones que desencadenan un reintento.
-        error_message (str): Mensaje de error si se exceden los reintentos.
+        retries (int): Maximum number of attempts. Default is 3.
+        retry_delay (int): Time in seconds between attempts. Default is 2.
+        default_return_value (any): Value to return if the maximum retries are exceeded.
+        exceptions (tuple): Exceptions that trigger a retry.
+        error_message (str): Error message if the maximum retries are exceeded.
 
     Returns:
-        any: El resultado de la función decorada o el valor por defecto.
+        any: The result of the decorated function or the default value.
     """
     def decorator(func):
         @wraps(func)
@@ -55,7 +55,7 @@ def silent_retry_with_default(retries=3, retry_delay=2, default_return_value=Non
                 try:
                     return func(*args, **kwargs)
                 except exceptions as e:
-                    print(f"Error: {e}. Intento {attempt + 1} de {retries}")
+                    print(f"Error: {e}. Attempt {attempt + 1} of {retries}")
                     sleep(retry_delay)
             print(error_message)
             return default_return_value
