@@ -7,7 +7,7 @@ setup(
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     author='Christian Jaimes Acevedo',
-    url='https://github.com/ChristianJaimes/sure-retry', 
+    url='https://github.com/ChristianJaimes/sure_retry', 
     license='MIT',
     packages=find_packages(),  
     classifiers=[
