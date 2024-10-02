@@ -1,6 +1,6 @@
-# sure_retry
+# retry_ops
 
-sure_retry is a Python library designed to simplify the creation of retry decorators. With sure_retry, you can effortlessly add retry logic to your functions, helping them handle transient errors more gracefully.
+retry_ops is a Python library designed to simplify the creation of retry decorators. With retry_ops, you can effortlessly add retry logic to your functions, helping them handle transient errors more gracefully.
 
 ## Features
 
@@ -8,14 +8,14 @@ sure_retry is a Python library designed to simplify the creation of retry decora
 - **Configurable**: Customize the number of retries, delay between retries, and more.
 - **Flexible**: Use with any Python function.
 ```sh
-pip install sure_retry
+pip install retry_ops
 ```
 ## Usage
 
-To use sure_retry, you simply need to import it and apply the retry decorator to the function you want to wrap. Here is an example:
+To use retry_ops, you simply need to import it and apply the retry decorator to the function you want to wrap. Here is an example:
 
 ```python
-from sure_retry import retry, silent_retry_with_default
+from retry_ops import retry, silent_retry_with_default
 
 # Simple usage with default settings
 @retry
@@ -57,7 +57,7 @@ The `@silent_retry_with_default` decorator accepts the following parameters:
 
 ## Contributing
 
-We welcome contributions! Please submit a pull request or open an issue to help improve sure_retry.
+We welcome contributions! Please submit a pull request or open an issue to help improve retry_ops.
 
 ## License
 

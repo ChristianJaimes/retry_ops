@@ -1,5 +1,5 @@
 import pytest
-from sure_retry import retry, silent_retry_with_default
+from retry_ops import retry, silent_retry_with_default
 
 # Auxiliary function that can fail for testing purposes
 def may_fail(counter, max_attempts):
