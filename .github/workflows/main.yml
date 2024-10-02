@@ -1,0 +1,35 @@
+name: 🐍 Python Tests 🚦
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest  # Elige el entorno donde correrán las pruebas
+
+    strategy:
+      matrix:
+        python-version: [3.7, 3.8, 3.9, 3.10]  # Diferentes versiones de Python para probar
+
+    steps:
+    - name: 📥 Check out the code
+      uses: actions/checkout@v3  # Descarga el código de tu repo
+
+    - name: 🐍 Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4  # Configura la versión de Python
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: 📦 Install dependencies
+      run: |
+        python -m pip install --upgrade pip  # Actualiza pip
+        pip install -r requirements.txt  # Instala dependencias del proyecto
+
+    - name: ✅ Run pytest
+      run: |
+        pytest  # Ejecuta las pruebas con pytest
