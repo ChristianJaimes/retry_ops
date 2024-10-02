@@ -1,20 +1,20 @@
 import pytest
-from retryer import retry, silent_retry_with_default
+from sure_retry import retry, silent_retry_with_default
 
-# Función auxiliar que puede fallar para las pruebas
+# Auxiliary function that can fail for testing purposes
 def may_fail(counter, max_attempts):
     """
-    Simula una función que falla varias veces antes de tener éxito.
+    Simulates a function that fails several times before succeeding.
     """
     if counter['attempt'] < max_attempts:
         counter['attempt'] += 1
-        raise ValueError("Error simulado")
+        raise ValueError("Simulated error")
     return "Success"
 
-# Pruebas para el decorador @retry
+# Tests for the @retry decorator
 def test_retry_success():
     """
-    Verifica que la función se reintenta correctamente y tiene éxito antes de agotar los reintentos.
+    Verifies that the function is retried correctly and succeeds before exhausting retries.
     """
     counter = {'attempt': 0}
     max_attempts = 2
@@ -30,10 +30,10 @@ def test_retry_success():
 
 def test_retry_exceeds_attempts():
     """
-    Verifica que se lanza una excepción cuando se exceden los intentos máximos.
+    Verifies that an exception is raised when the maximum retry attempts are exceeded.
     """
     counter = {'attempt': 0}
-    max_attempts = 4  # Más de los reintentos disponibles
+    max_attempts = 4  # More than the available retries
 
     @retry(retries=3, retry_delay=0.1, exceptions=(ValueError,))
     def my_function():
@@ -41,12 +41,12 @@ def test_retry_exceeds_attempts():
 
     with pytest.raises(Exception, match="Max retries exceeded"):
         my_function()
-    assert counter['attempt'] == 3  # Debería haberse reintentado el número máximo de veces
+    assert counter['attempt'] == 3  # Should have been retried the maximum number of times
 
 
 def test_retry_handles_different_exception():
     """
-    Verifica que no se reintenta si se lanza una excepción que no está en el conjunto de excepciones.
+    Verifies that no retries occur if an exception is raised that is not in the exception set.
     """
     counter = {'attempt': 0}
 
@@ -56,13 +56,13 @@ def test_retry_handles_different_exception():
 
     with pytest.raises(ValueError):
         my_function()
-    assert counter['attempt'] == 1  # Solo se debe ejecutar una vez ya que la excepción no coincide
+    assert counter['attempt'] == 1  # Should only run once as the exception does not match
 
 
-# Pruebas para el decorador @silent_retry_with_default
+# Tests for the @silent_retry_with_default decorator
 def test_silent_retry_with_default_success():
     """
-    Verifica que la función se reintenta correctamente y tiene éxito antes de agotar los reintentos.
+    Verifies that the function is retried correctly and succeeds before exhausting retries.
     """
     counter = {'attempt': 0}
     max_attempts = 2
@@ -78,10 +78,10 @@ def test_silent_retry_with_default_success():
 
 def test_silent_retry_with_default_fallback():
     """
-    Verifica que se devuelve el valor por defecto cuando se exceden los intentos máximos.
+    Verifies that the default value is returned when the maximum retry attempts are exceeded.
     """
     counter = {'attempt': 0}
-    max_attempts = 4  # Más de los reintentos disponibles
+    max_attempts = 4  # More than the available retries
 
     @silent_retry_with_default(retries=3, retry_delay=0.1, default_return_value="Fallback", exceptions=(ValueError,))
     def my_function():
@@ -89,4 +89,4 @@ def test_silent_retry_with_default_fallback():
 
     result = my_function()
     assert result == "Fallback"
-    assert counter['attempt'] == 3  # Debería haberse reintentado el número máximo de veces
+    assert counter['attempt'] == 3  # Should have been retried the maximum number of times

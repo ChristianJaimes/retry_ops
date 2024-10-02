@@ -1,14 +1,13 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='retryer',
+    name='sure_retry',
     version='0.1.0',
     description='A Python library providing retry decorators.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
     author='Christian Jaimes Acevedo',
-    author_email='christiandja@gmail.com',
-    url='https://github.com/ChristianJaimes/retryer', 
+    url='https://github.com/ChristianJaimes/sure-retry', 
     license='MIT',
     packages=find_packages(),  
     classifiers=[
