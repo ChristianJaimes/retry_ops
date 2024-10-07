@@ -1,3 +1,4 @@
+[![🐍 Unit Tests 🚦](https://github.com/ChristianJaimes/retry_ops/actions/workflows/main.yml/badge.svg)](https://github.com/ChristianJaimes/retry_ops/actions/workflows/main.yml) [![Downloads](https://static.pepy.tech/badge/retry-ops)](https://pepy.tech/project/retry-ops)
 # retry_ops
 
 retry_ops is a Python library designed to simplify the creation of retry decorators. With retry_ops, you can effortlessly add retry logic to your functions, helping them handle transient errors more gracefully.
