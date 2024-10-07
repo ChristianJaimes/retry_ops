@@ -9,7 +9,7 @@ retry_ops is a Python library designed to simplify the creation of retry decorat
 - **Configurable**: Customize the number of retries, delay between retries, and more.
 - **Flexible**: Use with any Python function.
 ```sh
-pip install retry_ops
+pip install retry-ops
 ```
 ## Usage
 
