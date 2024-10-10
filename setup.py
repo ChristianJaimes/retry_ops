@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='retry_ops',
-    version='0.1.1',
+    version='0.2.0',
     description='A Python library providing retry decorators.',
     long_description=open('README.md').read(),
     long_description_content_type='text/markdown',
