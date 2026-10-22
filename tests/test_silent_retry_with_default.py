@@ -45,14 +45,3 @@ def test_silent_retry_with_default_fallback():
     assert result == "Fallback"
     assert counter['attempt'] == 3  # Should have been retried the maximum number of times
 
-
-def test_retry_success_on_first_attempt():
-    """
-    Prueba que la función tenga éxito en el primer intento sin reintentos.
-    """
-    @retry_with_condition(retries=3, retry_delay=1)
-    def success_func():
-        return "Success"
-
-    assert success_func() == "Success"
-

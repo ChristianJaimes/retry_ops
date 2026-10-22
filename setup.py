@@ -4,12 +4,12 @@ setup(
     name='retry_ops',
     version='0.2.0',
     description='A Python library providing retry decorators.',
-    long_description=open('README.md').read(),
+    long_description=open('README.md', encoding='utf-8').read(),
     long_description_content_type='text/markdown',
     author='Christian Jaimes Acevedo',
     url='https://github.com/ChristianJaimes/retry_ops', 
     license='MIT',
-    packages=find_packages(),  
+    packages=find_packages(include=['retry_ops', 'retry_ops.*']),  
     classifiers=[
         'Programming Language :: Python :: 3', 
         'License :: OSI Approved :: MIT License',
@@ -17,6 +17,5 @@ setup(
     ],
     python_requires='>=3.6',  
     install_requires=[],  
-    tests_require=['pytest'],  
-    setup_requires=['pytest-runner'],  
+    extras_require={'test': ['pytest']},  
 )

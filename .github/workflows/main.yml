@@ -1,31 +1,30 @@
-name: 🐍 Unit Tests 🚦
-
+name: Unit tests and package
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
-
+    branches: [main]
+permissions:
+  contents: read
 jobs:
   test:
-    runs-on: ubuntu-latest  # Elige el entorno donde correrán las pruebas
-
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
+    container: python:${{ matrix.python }}
     steps:
-    - name: 📥 Check out the code
-      uses: actions/checkout@v3  # Descarga el código de tu repo
-
-    - name: 🐍 Set up Python 3.x
-      uses: actions/setup-python@v4  # Configura la versión de Python más reciente
-      with:
-        python-version: '3.x'  # Esto asegura que siempre use la última versión de Python 3
-
-    - name: 📦 Install dependencies
-      run: |
-        python -m pip install --upgrade pip  # Actualiza pip
-        pip install -r requirements.txt  # Instala dependencias del proyecto
-
-    - name: ✅ Run pytest
-      run: |
-        pytest  # Ejecuta las pruebas con pytest
+      - uses: actions/checkout@v4
+      - name: Install build and test tools
+        run: python -m pip install --upgrade pip build pytest
+      - name: Build distributions
+        run: python -m build
+      - name: Install wheel
+        run: python -m pip install dist/*.whl
+      - name: Test installed package outside checkout
+        run: |
+          mkdir -p /tmp/retry-ops-tests
+          cp -R tests /tmp/retry-ops-tests/
+          cd /tmp/retry-ops-tests
+          python -m pytest -q

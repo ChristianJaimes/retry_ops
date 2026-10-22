@@ -1,3 +1,3 @@
-from .decorators import retry, silent_retry_with_default
+from .decorators import RetryError, retry, retry_with_condition, silent_retry_with_default
 
-__all__ = ['retry', 'silent_retry_with_default', 'retry_with_condition']
+__all__ = ['RetryError', 'retry', 'silent_retry_with_default', 'retry_with_condition']
