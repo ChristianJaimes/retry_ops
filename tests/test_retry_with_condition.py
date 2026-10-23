@@ -1,3 +1,5 @@
+"""Verify retries triggered by results and matching exceptions."""
+
 import pytest
 
 from retry_ops.decorators import retry_with_condition, retry, silent_retry_with_default
@@ -18,6 +20,7 @@ def test_retry_success_on_first_attempt():
     """
     @retry_with_condition(retries=3, retry_delay=1)
     def success_func():
+        """Return a successful result on the first attempt."""
         return "Success"
 
     assert success_func() == "Success"
@@ -31,6 +34,7 @@ def test_retry_with_exception():
 
     @retry_with_condition(retries=3, retry_delay=1, exceptions=(ValueError,))
     def exception_func():
+        """Fail once with ValueError before returning a successful result."""
         nonlocal attempt
         attempt += 1
         if attempt < 2:
@@ -49,6 +53,7 @@ def test_retry_exceeding_attempts():
 
     @retry_with_condition(retries=3, retry_delay=1, default_return_value="Failed")
     def fail_func():
+        """Count each invocation and always raise a simulated ValueError."""
         nonlocal attempt
         attempt += 1
         raise ValueError("Simulated error")
@@ -65,6 +70,7 @@ def test_retry_with_condition():
 
     @retry_with_condition(retries=3, retry_delay=1, conditional=lambda result: result == "Retry")
     def conditional_func():
+        """Return a retryable result once, then return a successful result."""
         nonlocal attempt
         attempt += 1
         if attempt < 2:
@@ -83,6 +89,7 @@ def test_no_retry_when_condition_not_met():
 
     @retry_with_condition(retries=3, retry_delay=1, conditional=lambda result: result == "No Retry")
     def no_retry_func():
+        """Count the invocation and return a result that does not trigger retry."""
         nonlocal attempt
         attempt += 1
         return "Success"
@@ -99,6 +106,7 @@ def test_retry_on_condition_and_exception():
 
     @retry_with_condition(retries=4, retry_delay=1, conditional=lambda result: result == "Retry", exceptions=(ValueError,))
     def combined_func():
+        """Return a retryable result, then raise, then succeed on the third call."""
         nonlocal attempt
         attempt += 1
         if attempt == 1:
@@ -108,4 +116,4 @@ def test_retry_on_condition_and_exception():
         return "Success"
 
     assert combined_func() == "Success"
-    assert attempt == 3  # 1 reintento por la condición, 1 por la excepción    
+    assert attempt == 3  # 1 reintento por la condición, 1 por la excepción

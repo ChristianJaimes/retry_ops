@@ -8,7 +8,7 @@ retry_ops is a Python library designed to simplify the creation of retry decorat
 
 - **Easy to use**: Apply retry logic with minimal code changes.
 - **Configurable**: Customize the number of retries, delay between retries, and more.
-- **Flexible**: Use with any Python function.
+- **Flexible**: Use with synchronous Python functions.
 ```sh
 pip install retry-ops
 ```
@@ -20,7 +20,7 @@ To use retry_ops, you simply need to import it and apply the retry decorator to 
 from retry_ops import retry, silent_retry_with_default
 
 # Simple usage with default settings
-@retry
+@retry()
 def my_function():
     # Function logic that may fail
     print("Attempting the operation...")
@@ -44,7 +44,7 @@ def my_silent_function():
 
 The `@retry` decorator accepts the following parameters:
 
-- **retries** (int): The maximum number of retry attempts. Default is `3`.
+- **retries** (int): The maximum number of total attempts, including the first call. Default is `3`.
 - **retry_delay** (int or float): The delay (in seconds) between retry attempts. Default is `2`.
 - **exceptions** (tuple): A tuple of exception classes that will trigger a retry. Default is `(Exception,)`.
 - **error_message** (str): The error message to be raised when the retry attempts are exceeded. Default is `"Max retries exceeded"`.
@@ -52,7 +52,7 @@ The `@retry` decorator accepts the following parameters:
 The `@silent_retry_with_default` decorator accepts the following parameters:
 
 - **default_return_value** (any): The value to return if the retries are exceeded. Default is `None`.
-- **retries** (int): The maximum number of retry attempts. Default is `3`.
+- **retries** (int): The maximum number of total attempts, including the first call. Default is `3`.
 - **retry_delay** (int or float): The delay (in seconds) between retry attempts. Default is `2`.
 - **exceptions** (tuple): A tuple of exception classes that will trigger a retry. Default is `(Exception,)`.
 - **error_message** (str): The error message to be logged when the retry attempts are exceeded. Default is `"Max retries exceeded"`.
@@ -68,3 +68,39 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 ## Acknowledgements
 
 This library was inspired by the need for simple and configurable retry logic in Python functions.
+
+## Retry behavior
+
+All decorators require `retries` to be a positive integer and `retry_delay` to
+be a finite, non-negative number. `exceptions` must be a tuple of `Exception`
+subclasses; an empty tuple disables exception retries. Invalid configuration
+raises `TypeError` or `ValueError` when the decorator is created.
+
+There are at most `retries - 1` pauses. `retry` raises `RetryError` on exhaustion,
+with the original exception in `error.__cause__`. It remains an `Exception`
+subclass. Exceptions outside the configured tuple propagate immediately.
+
+```python
+from retry_ops import retry_with_condition
+
+@retry_with_condition(retries=3, retry_delay=0.5,
+                      conditional=lambda response: response["status"] == 503,
+                      default_return_value={"status": 503})
+def fetch_status():
+    return {"status": 200}
+```
+
+A true condition triggers another attempt; exhaustion returns the fallback.
+Errors raised by the condition itself propagate immediately without repeating
+an already completed operation. Conditions must be callable or `None`.
+
+These decorators support synchronous functions only, not `async def` functions
+or deferred generator execution. Use them for operations that are safe to repeat.
+They do not print to stdout. Enable DEBUG logging on `retry_ops.decorators` to
+see retry diagnostics; exception details may appear in those logs.
+
+## Development
+
+Install `pip install -e ".[test]"` and run `python -m pytest`.
+Tests replace sleep with a mock and check calls and delays without real waiting.
+CI also builds an sdist and wheel and tests the installed wheel outside the source tree.
