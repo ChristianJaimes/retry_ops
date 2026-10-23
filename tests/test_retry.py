@@ -1,3 +1,5 @@
+"""Verify successful retries, exhaustion, and exception filtering."""
+
 import pytest
 
 from retry_ops.decorators import retry_with_condition, retry, silent_retry_with_default
@@ -22,6 +24,7 @@ def test_retry_success():
 
     @retry(retries=3, retry_delay=0.1, exceptions=(ValueError,))
     def my_function():
+        """Invoke the simulated operation using this test case attempt counter."""
         return may_fail(counter, max_attempts)
 
     result = my_function()
@@ -38,6 +41,7 @@ def test_retry_exceeds_attempts():
 
     @retry(retries=3, retry_delay=0.1, exceptions=(ValueError,))
     def my_function():
+        """Invoke the simulated operation using this test case attempt counter."""
         return may_fail(counter, max_attempts)
 
     with pytest.raises(Exception, match="Max retries exceeded"):
@@ -53,6 +57,7 @@ def test_retry_handles_different_exception():
 
     @retry(retries=3, retry_delay=0.1, exceptions=(TypeError,))
     def my_function():
+        """Invoke the simulated operation using this test case attempt counter."""
         return may_fail(counter, 2)
 
     with pytest.raises(ValueError):

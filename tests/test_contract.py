@@ -1,3 +1,5 @@
+"""Regression tests for public imports, retry contracts, and diagnostics."""
+
 from unittest.mock import Mock, call
 import pytest
 import retry_ops
@@ -7,6 +9,7 @@ DECORATORS = [retry, silent_retry_with_default, retry_with_condition]
 
 
 def test_public_exports():
+    """Verify every declared public symbol is importable from the package."""
     namespace = {}
     exec('from retry_ops import *', namespace)
     for name in retry_ops.__all__:
@@ -16,6 +19,7 @@ def test_public_exports():
 @pytest.mark.parametrize('decorator', DECORATORS)
 @pytest.mark.parametrize('attempts', [1, 3])
 def test_exhaustion_and_delays(decorator, attempts, mock_sleep):
+    """Verify exact attempt counts, inter-attempt pauses, and error chaining."""
     original = ValueError('original')
     operation = Mock(side_effect=original)
     wrapped = decorator(retries=attempts, retry_delay=0.25)(operation)
@@ -31,6 +35,7 @@ def test_exhaustion_and_delays(decorator, attempts, mock_sleep):
 
 @pytest.mark.parametrize('decorator', DECORATORS)
 def test_success_and_metadata(decorator, mock_sleep):
+    """Verify argument forwarding, metadata preservation, and immediate success."""
     @decorator()
     def operation(value, *, extra=0):
         """Original documentation."""
@@ -44,6 +49,7 @@ def test_success_and_metadata(decorator, mock_sleep):
 
 @pytest.mark.parametrize('decorator', DECORATORS)
 def test_unmatched_exception(decorator, mock_sleep):
+    """Verify excluded exceptions propagate after one call without sleeping."""
     operation = Mock(side_effect=TypeError('not retriable'))
     with pytest.raises(TypeError):
         decorator(exceptions=(ValueError,))(operation)()
@@ -61,11 +67,13 @@ def test_unmatched_exception(decorator, mock_sleep):
     ({'exceptions': (KeyboardInterrupt,)}, TypeError),
 ])
 def test_invalid_configuration(decorator, options, error):
+    """Verify invalid options fail when the decorator is created."""
     with pytest.raises(error):
         decorator(**options)
 
 
 def test_condition_exhaustion(mock_sleep):
+    """Verify persistent retry conditions return the fallback after all attempts."""
     operation = Mock(return_value='retry')
     assert retry_with_condition(retries=3, retry_delay=0,
         conditional=lambda result: result == 'retry',
@@ -75,6 +83,7 @@ def test_condition_exhaustion(mock_sleep):
 
 
 def test_predicate_error_propagates(mock_sleep):
+    """Verify predicate errors do not repeat an already successful operation."""
     operation = Mock(return_value='success')
     condition = Mock(side_effect=ValueError('bad predicate'))
     with pytest.raises(ValueError, match='bad predicate'):
@@ -84,18 +93,21 @@ def test_predicate_error_propagates(mock_sleep):
 
 
 def test_invalid_condition():
+    """Verify a non-callable condition is rejected immediately."""
     with pytest.raises(TypeError):
         retry_with_condition(conditional=False)
 
 
 @pytest.mark.parametrize('decorator', DECORATORS)
 def test_empty_exceptions(decorator, mock_sleep):
+    """Verify an empty exception tuple disables retries on errors."""
     with pytest.raises(ValueError):
         decorator(exceptions=())(Mock(side_effect=ValueError))()
     mock_sleep.assert_not_called()
 
 
 def test_logging_and_custom_message(caplog, capsys):
+    """Verify exhaustion diagnostics use logging without stdout output."""
     with caplog.at_level('DEBUG', logger='retry_ops.decorators'):
         assert silent_retry_with_default(retries=1, error_message='exhausted')(
             Mock(side_effect=ValueError('failure')))() is None
@@ -104,5 +116,6 @@ def test_logging_and_custom_message(caplog, capsys):
 
 
 def test_custom_retry_error():
+    """Verify RetryError preserves the configured exhaustion message."""
     with pytest.raises(RetryError, match='custom'):
         retry(retries=1, error_message='custom')(Mock(side_effect=ValueError))()

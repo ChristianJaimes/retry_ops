@@ -1,3 +1,5 @@
+"""Configure the retry_ops distribution and optional test dependencies."""
+
 from setuptools import setup, find_packages
 
 setup(
